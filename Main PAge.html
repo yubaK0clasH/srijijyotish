@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sri Ji Jyotish | Trusted Nepalese Vedic Astrology</title>
+  <meta name="description" content="Sri Ji Jyotish offers authentic Hindu astrology services in Nepal including Kundali Matching, Muhurat Selection, and more. Experienced astrologer Sridhar Gaire." />
+  <meta name="keywords" content="Nepal Astrology, Hindu Astrology Nepal, Vedic Astrology, Sri Ji Jyotish, Kundali, Janma Patri, Muhurat, Graha Shanti" />
+  <meta name="author" content="Sri Ji Jyotish" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Roboto&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  
+  <style>
+    /* Root variables for light & dark mode */
+    :root {
+      --bg-color: #ebe701;
+      --text-color: #3b2c35;
+      --accent-color: #9c27b0;
+      --secondary-color: #f57c00;
+      --card-bg: #08dd19;
+      --font-primary: 'Merriweather', serif;
+      --font-secondary: 'Roboto', sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1a1a1a;
+      --text-color: #e0c3fc;
+      --accent-color: #ce93d8;
+      --secondary-color: #ffb74d;
+      --card-bg: #2e2e2e;
+    }
+
+    /* Global Styles */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-secondary);
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.5s ease, color 0.5s ease;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+      color: white;
+      padding: 1.5rem 2rem;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      animation: slideDown 0.8s ease forwards;
+    }
+
+    header h1 {
+      font-family: var(--font-primary);
+      font-weight: 700;
+      font-size: 2.8rem;
+      margin: 0 0 0.2rem 0;
+      letter-spacing: 2px;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    header h1::before {
+      content: "ॐ";
+      font-size: 2rem;
+      margin-right: 0.5rem;
+      color: var(--secondary-color);
+    }
+
+    header p {
+      margin: 0;
+      font-weight: 600;
+      font-size: 1.1rem;
+      letter-spacing: 0.8px;
+    }
+
+    nav {
+      background-color: var(--accent-color);
+      display: flex;
+      justify-content: center;
+      padding: 0.7rem 0;
+      box-shadow: inset 0 -3px 8px rgba(0,0,0,0.15);
+    }
+
+    nav a, nav button {
+      color: white;
+      font-weight: 700;
+      font-family: var(--font-secondary);
+      margin: 0 1.25rem;
+      text-decoration: none;
+      padding: 0.4rem 0.8rem;
+      font-size: 1rem;
+      border: 2px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s, border-color 0.3s;
+      background: transparent;
+    }
+
+    nav a:hover, nav button:hover {
+      background-color: white;
+      color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+
+    nav button {
+      background: transparent;
+      border: 2px solid transparent;
+    }
+
+    main {
+      flex-grow: 1;
+      padding: 2rem;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    section {
+      margin-bottom: 3rem;
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      animation: fadeInUp 1s ease forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    section h2 {
+      font-family: var(--font-primary);
+      font-weight: 700;
+      font-size: 2.2rem;
+      color: var(--accent-color);
+      margin-bottom: 1rem;
+      text-align: center;
+      letter-spacing: 1.5px;
+    }
+
+    section ul {
+      list-style: none;
+      padding-left: 0;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      font-weight: 600;
+    }
+
+    section ul li {
+      margin-bottom: 0.8rem;
+      padding-left: 1.4rem;
+      position: relative;
+    }
+
+    section ul li::before {
+      content: "🔮";
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .cta-button {
+      display: block;
+      max-width: 240px;
+      margin: 2rem auto 0 auto;
+      padding: 0.9rem 1.5rem;
+      font-size: 1.15rem;
+      background-color: var(--secondary-color);
+      color: white;
+      text-align: center;
+      font-weight: 700;
+      border-radius: 10px;
+      text-decoration: none;
+      box-shadow: 0 5px 15px rgba(245,124,0,0.6);
+      transition: background-color 0.4s ease;
+    }
+
+    .cta-button:hover {
+      background-color: #bb5d00;
+      box-shadow: 0 8px 20px rgba(187,93,0,0.8);
+    }
+
+    .unnamed-services a {
+      display: block;
+      margin: 0.6rem 0;
+      font-weight: 600;
+      color: var(--accent-color);
+      text-decoration: underline;
+      transition: color 0.3s;
+    }
+
+    .unnamed-services a:hover {
+      color: var(--secondary-color);
+    }
+
+    .map-container {
+      height: 320px;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(227, 243, 7, 0.233);
+    }
+
+    footer {
+      background: var(--accent-color);
+      color: rgb(170, 196, 22);
+      text-align: center;
+      padding: 1.2rem;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      box-shadow: 0 -3px 8px rgba(0,0,0,0.12);
+      user-select: none;
+    }
+
+    /* Toolbar for buttons */
+    .toolbar {
+      display: flex;
+      justify-content: center;
+      margin: 2rem 0;
+      gap: 1rem;
+    }
+
+    .toolbar button {
+      padding: 0.6rem 1.3rem;
+      font-weight: 700;
+      font-family: var(--font-secondary);
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+      transition: background-color 0.3s ease;
+    }
+
+    .toolbar button.theme-btn {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    .toolbar button.theme-btn:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .toolbar button.save-btn {
+      background-color: #9907c5;
+      color: white;
+    }
+
+    .toolbar button.save-btn:hover {
+      background-color: #9907c5;
+    }
+
+    /* Animations */
+    @keyframes slideDown {
+      0% { opacity: 0; transform: translateY(-40px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      nav {
+        flex-wrap: wrap;
+      }
+      nav a, nav button {
+        margin: 0.4rem 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+
+  <header>
+    <b><h1>Sri Ji Jyotish Sewa</h1></b>
+    <p>Trusted Nepalese Vedic Astrology & Hindu Spiritual Guidance</p>
+  </header>
+
+  <nav>
+    <button id="aboutSriJiBtn" aria-label="About Sri Ji">About Sri Ji</button>
+    <a href="#about">About Us</a>
+    <a href="#services">Services</a>
+    <a href="#extra">Extra Services</a>
+    <a href="#map">Find Us</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <div class="toolbar">
+    <button class="theme-btn" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
+    <button class="save-btn" onclick="savePage()">Save Changes</button>
+  </div>
+
+  <main>
+    <section id="about" class="visible">
+      <h2>About Us IN Nepali</h2>
+<p><h2>
+    श्री जी ज्योतिष सेवाले निरन्तर रुपमा लामो समयदेखि ज्योतिष,वास्तु र वैदिक कर्मकाण्डमा 
+  आधारित रहेर सेवा प्रदान गरिरहेको छ । 
+यसका सन्चालक ज्योतिषाचार्य श्रीधर गैरे वाल्यकालदेखी नै यहि क्षेत्रमा अध्ययनरत र 
+यसै सङ्ग सम्वन्धित रहेर सबैलाइ मार्गनिर्देशन गराउदै आउनुभएको छ ।
+तपाइले पनि ज्योतिषको माध्यमबाट व्यक्तिगत जीवनको बारेमा जानकारी , 
+समस्या समाधानका उपाय आदिको लागि प्रत्यक्ष, अप्रत्यक्षरुपमा परामर्श लिएर लाभ लिन सक्नुहुनेछ।
+</h2>
+</p>
+    </section>
+     <section id="about" class="visible">
+      <h2>About Us IN English</h2>
+<p><h2>
+Shri Ji Jyotish Sewa has been consistently providing services based on astrology, 
+Vastu, and Vedic rituals for a long time. 
+The operator, Astrologer Shridhara Gaire, has been involved in this 
+field since childhood and has been guiding everyone related to this domain. 
+You may also benefit by consulting directly or indirectly for information about 
+personal life and solutions to problems through astrology.
+</h2>
+</p>
+    </section>
+
+    <section id="services" class="visible">
+      <h2>हाम्रो ज्योतिष सेवा</h2>
+      <ul>
+        <h3><li> संगतिपूर्ण सम्बन्धका लागि कुंडली मिलान</li><br>
+        <li> जन्म पत्रिका (जन्म चार्ट) विश्लेषण</li><br>
+        <li> मुहूर्त (शुभ समय) चयन</li><br>
+        <li> ग्रह शान्ति पूजा (ग्रहका शान्तिका लागि अनुष्ठानहरू)</li><br>
+        <li> माङ्गलिक दोष पहिचान र उपाय</li><br>
+        <li> वेदिक ज्योतिषमा आधारित विवाह र करियर सल्लाह</li></h3><br>
+      </ul>
+      <a href="#contact" class="cta-button">Book Your Consultation</a>
+    </section>
+
+    <section id="extra" class="visible">
+      <h2>Additional Services</h2>
+      <div class="unnamed-services">
+        <br>
+      <h2> 
+      <h2>
+       <div style="text-align: center;">
+          <a href="/Services1.html" style="padding: 0.5rem 1rem; font-weight: bold; 
+          border-radius: 8px; cursor: pointer; 
+         background-color: #8e44ad; color: white; border: none; 
+          margin-left: 1rem; text-decoration: none; display: inline-block;">
+              Service 1 </a></div><br>
+
+        <div style="text-align: center;">
+  <a href="/Services2.html" style="padding: 0.5rem 1rem; font-weight: bold; 
+      border-radius: 8px; cursor: pointer; 
+      background-color: #8e44ad; color: white; border: none; 
+      margin-left: 1rem; text-decoration: none; display: inline-block;">
+    Service 2
+  </a>
+</div><br>
+
+      <div style="text-align: center;">
+  <a href="/Services3.html" style="padding: 0.5rem 1rem; font-weight: bold; 
+      border-radius: 8px; cursor: pointer; 
+      background-color: #8e44ad; color: white; border: none; 
+      margin-left: 1rem; text-decoration: none; display: inline-block;">
+    Service 3
+  </a>
+</div><br>
+
+        <div style="text-align: center;">
+  <a href="/Services4.html" style="padding: 0.5rem 1rem; font-weight: bold; 
+      border-radius: 8px; cursor: pointer; 
+      background-color: #8e44ad; color: white; border: none; 
+      margin-left: 1rem; text-decoration: none; display: inline-block;">
+    Service 4
+  </a>
+</div><br>
+
+      <div style="text-align: center;">
+  <a href="/Services5.html" style="padding: 0.5rem 1rem; font-weight: bold; 
+      border-radius: 8px; cursor: pointer; 
+      background-color: #8e44ad; color: white; border: none; 
+      margin-left: 1rem; text-decoration: none; display: inline-block;">
+    Service 5
+  </a>
+</div><br>
+
+     <div style="text-align: center;">
+  <a href="/Services6.html" style="padding: 0.5rem 1rem; font-weight: bold; 
+      border-radius: 8px; cursor: pointer; 
+      background-color: #8e44ad; color: white; border: none; 
+      margin-left: 1rem; text-decoration: none; display: inline-block;">
+    Service 6
+  </a>
+</div><br>
+
+        <div style="text-align: center;">
+  <a href="/Services7.html" style="padding: 0.5rem 1rem; font-weight: bold; 
+      border-radius: 8px; cursor: pointer; 
+      background-color: #8e44ad; color: white; border: none; 
+      margin-left: 1rem; text-decoration: none; display: inline-block;">
+    Service 7
+  </a>
+</div><br>
+
+      <div style="text-align: center;">
+  <a href="/Services8.html" style="padding: 0.5rem 1rem; font-weight: bold; 
+      border-radius: 8px; cursor: pointer; 
+      background-color: #8e44ad; color: white; border: none; 
+      margin-left: 1rem; text-decoration: none; display: inline-block;">
+    Service 8
+  </a>
+</div><br>
+
+       <div style="text-align: center;">
+  <a href="/Services9.html" style="padding: 0.5rem 1rem; font-weight: bold; 
+      border-radius: 8px; cursor: pointer; 
+      background-color: #8e44ad; color: white; border: none; 
+      margin-left: 1rem; text-decoration: none; display: inline-block;">
+    Service 9
+  </a>
+</div><br>
+
+        <div style="text-align: center;">
+  <a href="/Services10.html" style="padding: 0.5rem 1rem; font-weight: bold; 
+      border-radius: 8px; cursor: pointer; 
+      background-color: #8e44ad; color: white; border: none; 
+      margin-left: 1rem; text-decoration: none; display: inline-block;">
+    Service 10
+  </a>
+</div><br>
+</h2></h2>
+
+      </div>
+    </section>
+
+    <section id="map" class="visible">
+      <h2>Our Location</h2>
+      <p>Find us at Gurumarg, near the spiritual hub of Nepal,Kathmandu. Experience authentic Vedic astrology guidance in person.</p>
+      <div id="mapid" class="map-container" aria-label="Map showing location of Sri Ji Jyotish"></div>
+    </section>
+
+      <section id="contact" class="visible">
+      <h2>Contact Us</h2>
+      <h2><strong>Phone:<br></h2><h1></strong> 
+            <div style="text-align: center;"><p> +9779846820517<br>
+             +9779819497437</p></div></h1>
+            
+      <h2><strong>Email:<br></h2><h1></strong> 
+      <div style="text-align: center;"><a href="mailto:astrologer.sri23@gmail.com">astrologer.sri23@gmail.com</a></div></p>
+      <h2><strong>Time:<br></h2><h1></strong>  
+        <div style="text-align: center;"> <h2>Sunday to Saturday – 6:00 AM to 6:00 PM</h2></div></p>
+    </section>
+
+
+<section id="profile-section">
+  <h2>👤 Customize Your Profile Photo (Private)</h2>
+  <div style="text-align: center;">
+    <input type="file" id="photoInput" accept="image/*"><br><br>
+    <img id="preview" src="" alt="Your Profile Photo" style="max-width: 200px; display:none; border-radius: 10px;"/>
+    <br><br>
+    <button onclick="savePhoto()">Save My Photo</button>
+  </div>
+</section>
+
+
+
+  </main>
+
+  <footer>
+    © 2025 Sri Ji Jyotish. All Rights Reserved. Trusted Nepalese Hindu Astrology.
+  </footer>
+
+  <!-- Leaflet JS for map -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    // Initialize map
+    const map = L.map('mapid').setView([27.7106, 85.3451], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data © <a href="https://openstreetMap.org">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    L.marker([27.7106, 85.3451]).addTo(map).bindPopup('Sri Ji Jyotish').openPopup();
+
+    // Theme toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      if (html.getAttribute('data-theme') === 'dark') {
+        html.setAttribute('data-theme', 'light');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+      }
+    }
+
+    // Simulated save button
+    function savePage() {
+      alert("Your changes are saved locally");
+    }
+
+    // Fade in animation on scroll for sections
+    const sections = document.querySelectorAll('section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+    sections.forEach(section => observer.observe(section));
+
+    // Open About Sri Ji page on button click
+    document.getElementById('aboutSriJiBtn').addEventListener('click', () => {
+      window.open('about-sriji.html', '_blank');
+    });
+
+
+// Preview and Save profile photo
+document.getElementById('photoInput').addEventListener('change', function (e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (evt) {
+      const img = document.getElementById('preview');
+      img.src = evt.target.result;
+      img.style.display = 'block';
+      // Save temporarily in localStorage
+      localStorage.setItem('profilePhoto', evt.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Load photo if already saved
+window.addEventListener('DOMContentLoaded', () => {
+  const savedPhoto = localStorage.getItem('profilePhoto');
+  if (savedPhoto) {
+    const img = document.getElementById('preview');
+    img.src = savedPhoto;
+    img.style.display = 'block';
+  }
+});
+
+// Simulated Save Action
+function savePhoto() {
+  alert("Your profile photo is saved (only you can see it on this device).");
+}
+
+
+
+  </script>
+</body>
+</html>
